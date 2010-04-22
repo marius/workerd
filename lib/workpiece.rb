@@ -1,28 +1,27 @@
 class SimpleWorkerd
   class Workpiece < ActiveRecord::Base
+    WAITING = 0
+    RUNNING = 1
+    COMPLETED = 2
+    ERROR = 3
 
-    acts_as_state_machine :initial => :waiting
-    state :waiting
-    state :running
-    state :completed
-    state :error
-
-    event :execute do
-      transitions :from => :waiting, :to => :running
-    end
-
-    event :complete do
-      transitions :from => :running, :to => :completed
-    end
-
-    event :error do
-      transitions :from => :running, :to => :error
-    end
+    scope :waiting, where("state = #{WAITING}")
+    scope :running, where("state = #{RUNNING}")
+    scope :completed, where("state = #{COMPLETED}")
+    scope :error, where("state = #{ERROR}")
 
     serialize :method_argument
 
-    def self.next_waiting
-      find_in_state(:first, :waiting, :order => id, :lock => true)
+    def execute!
+      update_attribute :state, RUNNING
+    end
+
+    def complete!
+      update_attribute :state, COMPLETED
+    end
+
+    def error!
+      update_attribute :state, ERROR
     end
 
     def run
