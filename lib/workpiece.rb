@@ -1,4 +1,4 @@
-class SimpleWorkerd
+class Workerd
   class Workpiece < ActiveRecord::Base
     WAITING = 0
     RUNNING = 1

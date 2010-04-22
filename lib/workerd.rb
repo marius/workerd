@@ -1,8 +1,8 @@
-class SimpleWorkerd
+class Workerd
   def work
     # Or optimistic locking?
     Workpiece.transaction do
-      item = Workpiece.next_waiting
+      item = Workpiece.waiting.first :order => id, :lock => true
       return unless item
       item.execute!
     end
@@ -22,7 +22,9 @@ class SimpleWorkerd
 
   def main
     loop do
-      work if work?
+      while work?
+        work
+      end
       sleep 2
     end
   end
