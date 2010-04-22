@@ -8,7 +8,7 @@ class Workerd
     end
     begin
       item.run
-      item.complete!
+      item.destroy
     rescue Exception => e
       item.error!
       item.error_message = "#{e.message}\n#{e.backtrace.join("\n")}"
