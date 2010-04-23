@@ -35,7 +35,7 @@ class Workerd
 end
 
 if __FILE__ == $0
-  s = SimpleWorkerd.new
+  s = Workerd.new
   s.daemonize
   s.main
 end

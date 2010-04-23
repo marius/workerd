@@ -1,8 +1,8 @@
 class CreateWorkpieces < ActiveRecord::Migration
   def self.up
-    create_table :workpieces do |t|
+    create_table :workpieces, :force => true do |t|
       t.string :class_name, :method_name, :null => false
-      t.string :argument_hash
+      t.string :method_arguments
       t.integer :state, :default => 0, :null => false
       t.timestamps
     end
