@@ -1,13 +1,49 @@
 Workerd
 =======
 
-Introduction goes here.
-
+Workerd is a Ruby on Rails plugin which helps running tasks in the background.
+It is inspired by Bart ten Brinke's worker_queue.
 
 Example
 =======
 
-Example goes here.
+Create a background job:
+Workerd::Workpiece.create(:class_name => 'Model', :method_name => 'method')
 
+This new job will get picked up by a worker and he will execute Model.method
+with no arguments. You can easily add arguments with the :method_argument
+option, e.g. :method_argument => [17, 'foo']
+
+Run one worker in foreground during development:
+rake workerd:run
+
+Start one worker in background:
+rake workerd:start
+Stop it:
+rake workerd:stop
+
+You can easily create your own jobs with advanced features by inheriting from
+Workerd::Workpiece like this
+
+class MyJob < Workerd::Workpiece
+  def progress=(progress)
+    update_attribute(:progress, progress)
+  end
+end
+
+You can then define a column progress as an integer in your database. After this
+you can use it from your foreground and background code:
+
+# in a normal rails method
+job = Workerd::MyJob.create(:class_name => 'Foo', :method_name => 'bar')
+
+# in an AJAX method
+render :text => job.progress
+
+# in Foo.bar
+Workerd.current_job.progess = 77
+
+Take care that the `workpieces` table has all the needed columns! Especially
+`type` is needed for the inheritance done by rails.
 
 Copyright (c) 2010 Marius Nuennerich, released under the MIT license
