@@ -11,8 +11,8 @@ Create a background job:
 Workerd::Workpiece.create(:class_name => 'Model', :method_name => 'method')
 
 This new job will get picked up by a worker and he will execute Model.method
-with no arguments. You can easily add arguments with the :method_argument
-option, e.g. :method_argument => [17, 'foo']
+with no arguments. You can add an argument with the :method_argument
+option, e.g. :method_argument => [17, 'foo', Time.now]
 
 Run one worker in foreground during development:
 rake workerd:run
@@ -22,28 +22,22 @@ rake workerd:start
 Stop it:
 rake workerd:stop
 
+Customization
+=============
+
 You can easily create your own jobs with advanced features by inheriting from
-Workerd::Workpiece like this
+Workerd::Workpiece and adding a `type` column.
+For example you can then define a column `progress` as an integer in your
+database. After this you can use it from your foreground and background code:
 
-class MyJob < Workerd::Workpiece
-  def progress=(progress)
-    update_attribute(:progress, progress)
-  end
-end
-
-You can then define a column progress as an integer in your database. After this
-you can use it from your foreground and background code:
-
-# in a normal rails method
+# in a normal rails request
 job = MyJob.create(:class_name => 'Foo', :method_name => 'bar')
 
-# in an AJAX method
+# in an AJAX request
 render :text => job.progress
 
 # in Foo.bar
-Workerd.current_job.progess = 77
-
-Take care that the `workpieces` table has all the needed columns! Especially
-`type` is needed for the inheritance done by rails.
+Workerd.current_workpiece.progess = 77
+Workerd.current_workpiece.save!
 
 Copyright (c) 2010 Marius Nuennerich, released under the MIT license

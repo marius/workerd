@@ -1,22 +1,21 @@
 class Workerd
-  cattr_accessor :current_job
+  cattr_accessor :current_workpiece
 
   def work
     item = nil
-    # Or optimistic locking?
     Workpiece.transaction do
       item = Workpiece.waiting.first :order => 'id', :lock => true
       return unless item
       item.execute!
     end
-    self.class.current_job = item
+    self.class.current_workpiece = item
     begin
       item.run
     rescue Exception => e
       item.error! "#{e.message}\n#{e.backtrace.join("\n")}"
     end
     item.destroy unless item.error?
-    self.class.current_job = nil
+    self.class.current_workpiece = nil
   end
 
   def work?

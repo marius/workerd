@@ -16,7 +16,7 @@ class Workerd
     end
 
     def method_argument
-      YAML.load @attributes['method_argument']
+      YAML.load @attributes['method_argument'] if @attributes['method_argument']
     end
 
     def execute!
@@ -32,7 +32,11 @@ class Workerd
     end
 
     def run
-      class_name.constantize.send(method_name.to_sym, method_argument)
+      if @attributes['method_argument']
+        class_name.constantize.send(method_name.to_sym, method_argument)
+      else
+        class_name.constantize.send(method_name.to_sym)
+      end
     end
   end
 end
