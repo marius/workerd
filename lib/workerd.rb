@@ -1,5 +1,7 @@
 class Workerd
-  cattr_accessor :current_workpiece
+  @@pidfile = "#{Rails.root}/tmp/pids/workerd.pid"
+  cattr_reader :current_workpiece, :pidfile
+  @@quit = false
 
   def work
     item = nil
@@ -24,20 +26,38 @@ class Workerd
 
   def run
     loop do
-      while work?
+      while work? and not @@quit
         work
       end
+      exit if @@quit
       sleep 2
     end
   end
 
-  def daemonize
-    # implement me
+  def start
+    daemonize
+    File.open(@@pidfile, 'w') { |f| f.write(Process.pid.to_s) }
+    at_exit { File.delete(@@pidfile) if File.exist?(@@pidfile) }
+    trap('TERM') { @@quit = true }
+    # daemonize kills the db connection
+    ActiveRecord::Base.connection.reconnect!
+    run
   end
-end
 
-if __FILE__ == $0
-  w = Workerd.new
-  w.daemonize
-  w.run
+  private
+
+  def daemonize
+    if RUBY_VERSION < '1.9'
+      exit if fork
+      Process.setsid
+      exit if fork
+      Dir.chdir '/'
+      File.umask 0000
+      STDIN.reopen '/dev/null'
+      STDOUT.reopen '/dev/null', 'a'
+      STDERR.reopen '/dev/null', 'a'
+    else
+      Process.daemon
+    end
+  end
 end
