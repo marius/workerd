@@ -8,7 +8,16 @@ class Workerd
     scope :running, where("state = #{RUNNING}")
     scope :error, where("state = #{ERROR}")
 
-    serialize :method_argument
+    # Does not work. AR only serializes Date, Time, Hash and Array
+    #serialize :method_argument
+
+    def method_argument=(arg)
+      @attributes['method_argument'] = arg.to_yaml
+    end
+
+    def method_argument
+      YAML.load @attributes['method_argument']
+    end
 
     def execute!
       update_attributes! :state => RUNNING
