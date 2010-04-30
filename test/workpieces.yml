@@ -1,0 +1,4 @@
+some_job:
+  class_name: 'SomeClass'
+  method_name: 'some_method'
+  method_argument: 42
