@@ -10,9 +10,7 @@ class Workerd
       item.run
       item.destroy
     rescue Exception => e
-      item.error!
-      item.error_message = "#{e.message}\n#{e.backtrace.join("\n")}"
-      item.save!
+      item.error! "#{e.message}\n#{e.backtrace.join("\n")}"
     end
   end
 

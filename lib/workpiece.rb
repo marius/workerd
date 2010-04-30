@@ -14,12 +14,14 @@ class Workerd
       update_attribute :state, RUNNING
     end
 
-    def error!
-      update_attribute :state, ERROR
+    def error!(msg)
+      self.error_message = msg
+      self.state = ERROR
+      save!
     end
 
     def run
-      class_name.constantize.send(method_name.to_sym, method_arguments.clone)
+      class_name.constantize.send(method_name.to_sym, method_argument.clone)
     end
   end
 end
