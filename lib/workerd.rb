@@ -1,4 +1,6 @@
 class Workerd
+  cattr_accessor :current_job
+
   def work
     # Or optimistic locking?
     Workpiece.transaction do
@@ -6,19 +8,21 @@ class Workerd
       return unless item
       item.execute!
     end
+    self.class.current_job = item
     begin
       item.run
-      item.destroy
     rescue Exception => e
       item.error! "#{e.message}\n#{e.backtrace.join("\n")}"
     end
+    item.destroy unless item.error?
+    self.class.current_job = nil
   end
 
   def work?
     Workpiece.waiting.size > 0
   end
 
-  def main
+  def run
     loop do
       while work?
         work
@@ -33,7 +37,7 @@ class Workerd
 end
 
 if __FILE__ == $0
-  s = Workerd.new
-  s.daemonize
-  s.main
+  w = Workerd.new
+  w.daemonize
+  w.run
 end

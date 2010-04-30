@@ -11,13 +11,15 @@ class Workerd
     serialize :method_argument
 
     def execute!
-      update_attribute :state, RUNNING
+      update_attributes! :state => RUNNING
     end
 
     def error!(msg)
-      self.error_message = msg
-      self.state = ERROR
-      save!
+      update_attributes! :error_message => msg, :state => ERROR
+    end
+
+    def error?
+      state == ERROR
     end
 
     def run

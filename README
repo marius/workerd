@@ -35,7 +35,7 @@ You can then define a column progress as an integer in your database. After this
 you can use it from your foreground and background code:
 
 # in a normal rails method
-job = Workerd::MyJob.create(:class_name => 'Foo', :method_name => 'bar')
+job = MyJob.create(:class_name => 'Foo', :method_name => 'bar')
 
 # in an AJAX method
 render :text => job.progress
