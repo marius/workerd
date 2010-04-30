@@ -23,7 +23,7 @@ class Workerd
     end
 
     def run
-      class_name.constantize.send(method_name.to_sym, method_argument.clone)
+      class_name.constantize.send(method_name.to_sym, method_argument)
     end
   end
 end
