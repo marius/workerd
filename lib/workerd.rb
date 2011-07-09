@@ -1,7 +1,8 @@
 class Workerd
-  @@pidfile = "#{Rails.root}/tmp/pids/workerd.pid"
-  cattr_reader :current_workpiece, :pidfile
   @@quit = false
+  @@pidfile = "#{Rails.root}/tmp/pids/workerd.pid"
+  @@current_workpiece = nil
+  cattr_reader :current_workpiece, :pidfile
 
   def work
     item = nil
@@ -10,14 +11,14 @@ class Workerd
       return unless item
       item.execute!
     end
-    self.class.current_workpiece = item
+    @@current_workpiece = item
     begin
       item.run
     rescue Exception => e
       item.error! "#{e.message}\n#{e.backtrace.join("\n")}"
     end
     item.destroy unless item.error?
-    self.class.current_workpiece = nil
+    @@current_workpiece = nil
   end
 
   def work?
