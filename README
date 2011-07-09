@@ -4,6 +4,15 @@ Workerd
 Workerd is a Ruby on Rails plugin which helps running tasks in the background.
 It is inspired by Bart ten Brinke's worker_queue.
 
+Installation
+============
+
+cd your_rails_app/vendor/plugins
+git clone git://github.com/marius/workerd.git
+cd your_rails_app
+rails g workerd_migration
+rake db:migrate
+
 Example
 =======
 
@@ -39,5 +48,10 @@ render :text => job.progress
 # in Foo.bar
 Workerd.current_workpiece.progess = 77
 Workerd.current_workpiece.save!
+
+Todo
+====
+ * Add pidfile management to support more than one worker
+ * Convert to gem
 
 Copyright (c) 2010 Marius Nuennerich, released under the MIT license
