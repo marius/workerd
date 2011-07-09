@@ -9,14 +9,14 @@ class Workerd
     scope :error, where("state = #{ERROR}")
 
     # Does not work. AR only serializes Date, Time, Hash and Array
-    #serialize :method_argument
+    #serialize :method_arguments
 
-    def method_argument=(arg)
-      @attributes['method_argument'] = arg.to_yaml
+    def method_arguments=(arg)
+      @attributes['method_arguments'] = arg.to_yaml
     end
 
-    def method_argument
-      YAML.load @attributes['method_argument'] if @attributes['method_argument']
+    def method_arguments
+      YAML.load @attributes['method_arguments'] if @attributes['method_arguments']
     end
 
     def execute!
@@ -32,8 +32,8 @@ class Workerd
     end
 
     def run
-      if @attributes['method_argument']
-        class_name.constantize.send(method_name.to_sym, method_argument)
+      if @attributes['method_arguments']
+        class_name.constantize.send(method_name.to_sym, *method_arguments)
       else
         class_name.constantize.send(method_name.to_sym)
       end

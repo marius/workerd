@@ -7,8 +7,9 @@ It is inspired by Bart ten Brinke's worker_queue.
 Installation
 ============
 
+cd your_rails_app
 rails plugin install git://github.com/marius/workerd.git
-rails g workerd_migration
+rails generate workerd_migration
 rake db:migrate
 
 Example
@@ -18,8 +19,11 @@ Create a background job:
 Workerd::Workpiece.create(:class_name => 'Model', :method_name => 'method')
 
 This new job will get picked up by a worker and he will execute Model.method
-with no arguments. You can add an argument with the :method_argument
-option, e.g. :method_argument => [17, 'foo', Time.now]
+with no arguments. You can add arguments with the :method_arguments
+option, e.g. :method_arguments => [17, 'foo', Time.now] or
+:method_arguments => [[42, :symbol]] or :method_arguments => [1].
+The method_arguments array will be converted into the actual method arguments
+with the splat operator, so it has to be an array.
 
 Run one worker in foreground during development:
 rake workerd:run
